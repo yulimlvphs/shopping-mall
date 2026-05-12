@@ -1,8 +1,11 @@
 package com.yurim.item.Order;
 import com.yurim.item.Product.Product;
 import com.yurim.item.Product.ProductRepository;
+import com.yurim.item.Product.ProductResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -29,5 +32,12 @@ public class OrderService {
                 .orElseThrow(() -> new RuntimeException("주문 없음"));
 
         return orderMapper.toDto(order);
+    }
+
+    // 전체 조회
+    public List<OrderResponseDto> getAll() {
+        return orderRepository.findAllWithProduct().stream()
+                .map(orderMapper::toDto)
+                .toList();
     }
 }

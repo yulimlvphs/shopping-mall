@@ -2,6 +2,8 @@ package com.yurim.item.Order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
@@ -19,5 +21,11 @@ public class OrderController {
     @GetMapping("/{id}")
     public OrderResponseDto get(@PathVariable Long id) {
         return orderService.get(id);
+    }
+
+    // 전체 조회
+    @GetMapping
+    public List<OrderResponseDto> getAll(){
+        return orderService.getAll();
     }
 }
