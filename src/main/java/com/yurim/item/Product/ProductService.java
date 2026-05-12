@@ -8,26 +8,20 @@ import java.util.List;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductMapper productMapper;
 
     // 생성
     public ProductResponseDto create(ProductRequestDto dto) {
-        Product product = new Product(dto.getProductName(), dto.getProductPrice());
+        Product product = productMapper.toEntity(dto);
         Product saved = productRepository.save(product);
 
-        return new ProductResponseDto(
-                saved.getId(),
-                saved.getProductName(),
-                saved.getProductPrice()
-        );
+        return productMapper.toDto(saved);
     }
 
     // 전체 조회
     public List<ProductResponseDto> getAll() {
         return productRepository.findAll().stream()
-                .map(p -> new ProductResponseDto(
-                        p.getId(),
-                        p.getProductName(),
-                        p.getProductPrice()))
+                .map(productMapper::toDto)
                 .toList();
     }
 
@@ -36,11 +30,7 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("상품 없음"));
 
-        return new ProductResponseDto(
-                product.getId(),
-                product.getProductName(),
-                product.getProductPrice()
-        );
+        return productMapper.toDto(product);
     }
 
     // 수정
@@ -50,11 +40,7 @@ public class ProductService {
 
         product.update(dto.getProductName(), dto.getProductPrice());
 
-        return new ProductResponseDto(
-                product.getId(),
-                product.getProductName(),
-                product.getProductPrice()
-        );
+        return productMapper.toDto(product);
     }
 
     // 삭제

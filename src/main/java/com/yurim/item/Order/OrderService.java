@@ -10,19 +10,17 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final OrderMapper orderMapper;
 
     // 주문 생성
     public OrderResponseDto create(OrderRequestDto dto) {
         Product product = productRepository.findById(dto.getProductId())
                 .orElseThrow(() -> new RuntimeException("상품 없음"));
 
-        Order order = new Order(product);
+        Order order = orderMapper.toEntity(product);
         Order saved = orderRepository.save(order);
 
-        return new OrderResponseDto(
-                saved.getId(),
-                saved.getProduct().getProductName()
-        );
+        return orderMapper.toDto(saved);
     }
 
     // 단건 조회
@@ -30,9 +28,6 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("주문 없음"));
 
-        return new OrderResponseDto(
-                order.getId(),
-                order.getProduct().getProductName()
-        );
+        return orderMapper.toDto(order);
     }
 }
