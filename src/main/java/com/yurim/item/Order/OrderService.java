@@ -2,6 +2,7 @@ package com.yurim.item.Order;
 import com.yurim.item.Product.Product;
 import com.yurim.item.Product.ProductRepository;
 import com.yurim.item.Product.ProductResponseDto;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,17 +17,24 @@ public class OrderService {
     private final OrderMapper orderMapper;
 
     // 주문 생성
+    @Transactional
     public OrderResponseDto create(OrderRequestDto dto) {
         Product product = productRepository.findById(dto.getProductId())
                 .orElseThrow(() -> new RuntimeException("상품 없음"));
-
-        Order order = orderMapper.toEntity(product);
+        int updatedCount = productRepository.decreaseStockAtomic(
+                dto.getProductId(),
+                dto.getQuantity()
+        );
+        if (updatedCount == 0) {
+            throw new RuntimeException("재고 부족");
+        }
+        Order order = orderMapper.toEntity(product, dto.getQuantity());
         Order saved = orderRepository.save(order);
 
         return orderMapper.toDto(saved);
     }
 
-    // 단건 조회
+        // 단건 조회
     public OrderResponseDto get(Long orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("주문 없음"));

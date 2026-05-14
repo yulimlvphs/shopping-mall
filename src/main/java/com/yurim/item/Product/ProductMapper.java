@@ -7,7 +7,8 @@ public class ProductMapper {
     public Product toEntity(ProductRequestDto dto) {
         return new Product(
                 dto.getProductName(),
-                dto.getProductPrice()
+                dto.getProductPrice(),
+                dto.getStockQuantity()
         );
     }
 
@@ -16,7 +17,8 @@ public class ProductMapper {
         return new ProductResponseDto(
                 product.getId(),
                 product.getProductName(),
-                product.getProductPrice()
+                product.getProductPrice(),
+                product.getStockQuantity()
         );
     }
 }

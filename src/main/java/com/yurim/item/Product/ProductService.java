@@ -37,9 +37,11 @@ public class ProductService {
     public ProductResponseDto update(Long id, ProductRequestDto dto) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("상품 없음"));
-
-        product.update(dto.getProductName(), dto.getProductPrice());
-
+        product.update(
+                dto.getProductName(),
+                dto.getProductPrice(),
+                dto.getStockQuantity()
+        );
         return productMapper.toDto(product);
     }
 

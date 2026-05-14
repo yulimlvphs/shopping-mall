@@ -5,9 +5,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class ProductResponseDto {
-
     private Long id;
     private String productName;
     private Integer productPrice;
-
+    private Integer stockQuantity;
 }

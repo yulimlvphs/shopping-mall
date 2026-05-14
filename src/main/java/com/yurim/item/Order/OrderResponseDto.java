@@ -7,4 +7,6 @@ import lombok.Getter;
 public class OrderResponseDto {
     private Long orderId;
     private String productName;
+    private Integer quantity;
+    private OrderStatus orderStatus;
 }
