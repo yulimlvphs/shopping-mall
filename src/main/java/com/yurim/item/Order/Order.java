@@ -28,4 +28,8 @@ public class Order {
         this.quantity = quantity;
         this.orderStatus = OrderStatus.ORDERED;
     }
+
+    public void cancel() {
+        this.orderStatus = OrderStatus.CANCELLED;
+    }
 }

@@ -11,5 +11,13 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         WHERE p.id = :productId
           AND p.stockQuantity >= :quantity /*조건을 검사한 후에 변경사항을 저장하기 때문에 원자적 차감 실현*/
     """)
-    int decreaseStockAtomic(Long productId, Integer quantity);
+    int decreaseStockAtomic(Long productId, Integer quantity); // 주문추가
+
+    @Modifying
+    @Query("""
+    UPDATE Product p
+    SET p.stockQuantity = p.stockQuantity + :quantity
+    WHERE p.id = :productId
+    """)
+    int restoreStockAtomic(Long productId, Integer quantity); // 주문취소
 }

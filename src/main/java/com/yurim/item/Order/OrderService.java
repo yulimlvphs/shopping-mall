@@ -48,4 +48,27 @@ public class OrderService {
                 .map(orderMapper::toDto)
                 .toList();
     }
+
+    @Transactional
+    public OrderResponseDto cancel(Long orderId) {
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("주문 없음"));
+
+        // 이미 취소된 주문 방지
+        if (order.getOrderStatus() == OrderStatus.CANCELLED) {
+            throw new RuntimeException("이미 취소된 주문");
+        }
+
+        // 주문 상태 변경
+        order.cancel();
+
+        // 재고 복구
+        productRepository.restoreStockAtomic(
+                order.getProduct().getId(),
+                order.getQuantity()
+        );
+
+        return orderMapper.toDto(order);
+    }
 }

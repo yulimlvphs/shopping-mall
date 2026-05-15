@@ -32,4 +32,8 @@ public class Product {
         this.productPrice = productPrice;
         this.stockQuantity = stockQuantity;
     }
+
+    public void restoreStock(Integer quantity) {
+        this.stockQuantity += quantity;
+    }
 }
