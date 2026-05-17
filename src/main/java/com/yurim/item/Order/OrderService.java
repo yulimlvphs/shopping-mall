@@ -1,11 +1,12 @@
 package com.yurim.item.Order;
 import com.yurim.item.Product.Product;
 import com.yurim.item.Product.ProductRepository;
-import com.yurim.item.Product.ProductResponseDto;
-import jakarta.transaction.Transactional;
+import com.yurim.item.global.exception.InsufficientStockException;
+import com.yurim.item.global.exception.OrderNotFoundException;
+import com.yurim.item.global.exception.ProductNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
@@ -20,13 +21,13 @@ public class OrderService {
     @Transactional
     public OrderResponseDto create(OrderRequestDto dto) {
         Product product = productRepository.findById(dto.getProductId())
-                .orElseThrow(() -> new RuntimeException("상품 없음"));
+                .orElseThrow(ProductNotFoundException::new);
         int updatedCount = productRepository.decreaseStockAtomic(
                 dto.getProductId(),
                 dto.getQuantity()
         );
         if (updatedCount == 0) {
-            throw new RuntimeException("재고 부족");
+            throw new InsufficientStockException();
         }
         Order order = orderMapper.toEntity(product, dto.getQuantity());
         Order saved = orderRepository.save(order);
@@ -37,12 +38,13 @@ public class OrderService {
         // 단건 조회
     public OrderResponseDto get(Long orderId) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("주문 없음"));
+                .orElseThrow(OrderNotFoundException::new);
 
         return orderMapper.toDto(order);
     }
 
     // 전체 조회
+    @Transactional(readOnly = true)
     public List<OrderResponseDto> getAll() {
         return orderRepository.findAllWithProduct().stream()
                 .map(orderMapper::toDto)
@@ -53,7 +55,7 @@ public class OrderService {
     public OrderResponseDto cancel(Long orderId) {
 
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("주문 없음"));
+                .orElseThrow(OrderNotFoundException::new);
 
         // 이미 취소된 주문 방지
         if (order.getOrderStatus() == OrderStatus.CANCELLED) {
