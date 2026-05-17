@@ -28,4 +28,9 @@ public class OrderController {
     public List<OrderResponseDto> getAll(){
         return orderService.getAll();
     }
+
+    @PatchMapping("/{orderId}/cancel")
+    public OrderResponseDto cancel(@PathVariable Long orderId) {
+        return orderService.cancel(orderId);
+    }
 }

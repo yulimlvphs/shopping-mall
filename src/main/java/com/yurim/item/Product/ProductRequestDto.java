@@ -2,11 +2,10 @@ package com.yurim.item.Product;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @NoArgsConstructor
+@Getter
 public class ProductRequestDto {
-
     private String productName;
     private Integer productPrice;
-
+    private Integer stockQuantity;
 }
